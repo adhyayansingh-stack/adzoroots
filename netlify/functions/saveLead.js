@@ -1,28 +1,23 @@
-import pkg from "pg";
-const { Pool } = pkg;
+const { Pool } = require("pg");
 
 const pool = new Pool({
   connectionString: process.env.NETLIFY_DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-export const handler = async (event) => {
+exports.handler = async (event) => {
   try {
+    console.log("Function triggered");
+
     const data = JSON.parse(event.body);
+    console.log("Received:", data);
 
-    const { name, email, phone, company, message } = data;
-
-    if (!name || !email) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Missing required fields" })
-      };
-    }
-
-    await pool.query(
-      "INSERT INTO leads(name,email,phone,company,message) VALUES($1,$2,$3,$4,$5)",
-      [name, email, phone, company, message]
+    const result = await pool.query(
+      "INSERT INTO leads(name,email,phone,company,message) VALUES($1,$2,$3,$4,$5) RETURNING id",
+      [data.name, data.email, data.phone, data.company, data.message]
     );
+
+    console.log("Inserted ID:", result.rows[0].id);
 
     return {
       statusCode: 200,
@@ -32,7 +27,7 @@ export const handler = async (event) => {
     console.error("DB ERROR:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Server error" })
+      body: JSON.stringify({ message: "Database error" })
     };
   }
 };
