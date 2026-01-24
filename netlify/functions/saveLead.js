@@ -7,28 +7,40 @@ const pool = new Pool({
 });
 
 export const handler = async (event) => {
-  try {
-    const params = new URLSearchParams(event.body);
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Method not allowed" })
+    };
+  }
 
-    const name = params.get("name");
-    const email = params.get("email");
-    const phone = params.get("phone");
-    const company = params.get("company");
-    const message = params.get("message");
+  try {
+    const data = JSON.parse(event.body);
 
     await pool.query(
-      "INSERT INTO leads(name,email,phone,company,product) VALUES($1,$2,$3,$4,$5)",
-      [name, email, phone, company, message]
+      "INSERT INTO leads(name,email,phone,company,message) VALUES($1,$2,$3,$4,$5)",
+      [
+        data.name,
+        data.email,
+        data.phone,
+        data.company,
+        data.message
+      ]
     );
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: "Saved to database" })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Thank you! We’ll contact you soon." })
     };
   } catch (err) {
+    console.error("DB Error:", err);
+
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Server error" })
     };
   }
 };
