@@ -283,13 +283,13 @@ footer strong{color:#c9a227;}
     </p>
   </div>
   <div>
-    <form>
-      <input type="text" placeholder="Your Name">
-      <input type="text" placeholder="Company Name">
-      <input type="email" placeholder="Email">
-      <input type="text" placeholder="Phone Number">
-      <textarea rows="4" placeholder="Message"></textarea>
-      <button>Send Message</button>
+    <form id="leadForm">
+       <input type="text" name="name" placeholder="Your Name" required>
+       <input type="text" name="company" placeholder="Company Name">
+       <input type="email" name="email" placeholder="Email" required>
+       <input type="text" name="phone" placeholder="Phone Number">
+       <textarea rows="4" name="message" placeholder="Message"></textarea>
+       <button type="submit">Send Message</button>
     </form>
   </div>
 </section>
