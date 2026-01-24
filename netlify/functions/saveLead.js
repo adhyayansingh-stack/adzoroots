@@ -2,12 +2,16 @@ import pkg from "pg";
 const { Pool } = pkg;
 
 const pool = new Pool({
-  connectionString: process.env.NETLIFY_DATABASE_URL,
+  connectionString: process.env.NETLIFY_DATABASE_URL_UNPOOLED,
   ssl: { rejectUnauthorized: false }
 });
 
 export const handler = async (event) => {
   try {
+    if (event.httpMethod !== "POST") {
+      return { statusCode: 405, body: "Method Not Allowed" };
+    }
+
     const data = JSON.parse(event.body);
 
     await pool.query(
@@ -21,10 +25,9 @@ export const handler = async (event) => {
       body: JSON.stringify({ message: "Thank you! We’ll contact you soon." })
     };
   } catch (err) {
-    console.error("Function error:", err);
+    console.error("DB ERROR:", err);
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: "Server error" })
     };
   }
