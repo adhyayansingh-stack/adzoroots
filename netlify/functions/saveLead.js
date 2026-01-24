@@ -13,7 +13,7 @@ exports.handler = async (event) => {
     console.log("Received:", data);
 
     const result = await pool.query(
-      "INSERT INTO leads(name,email,phone,company,message) VALUES($1,$2,$3,$4,$5) RETURNING id",
+      "INSERT INTO leads(name,email,phone,company,product) VALUES($1,$2,$3,$4,$5)",
       [data.name, data.email, data.phone, data.company, data.message]
     );
 
