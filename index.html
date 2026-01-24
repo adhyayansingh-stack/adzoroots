@@ -316,41 +316,35 @@ footer strong{color:#c9a227;}
   </div>
 </footer>
 <script>
-document.getElementById("leadForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("leadForm");
 
-  const formData = new FormData(this);
+  if (!form) {
+    console.error("Form not found");
+    return;
+  }
 
-  try {
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
     const res = await fetch("/.netlify/functions/saveLead", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        name: formData.get("name"),
-        company: formData.get("company"),
-        email: formData.get("email"),
-        phone: formData.get("phone"),
-        message: formData.get("message")
+        name: form.name.value,
+        company: form.company.value,
+        email: form.email.value,
+        phone: form.phone.value,
+        message: form.message.value
       })
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("Server error:", text);
-      alert("Server error. Check console.");
-      return;
-    }
-
     const data = await res.json();
     alert(data.message || "Thank you! We’ll contact you soon.");
-    this.reset();
-
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    alert("Network error. Check console.");
-  }
+    form.reset();
+  });
 });
 </script>
 
