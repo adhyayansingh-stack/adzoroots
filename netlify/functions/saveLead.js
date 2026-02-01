@@ -13,7 +13,7 @@ exports.handler = async (event) => {
     console.log("Received:", data);
 
     const result = await pool.query(
-      "INSERT INTO leads(name,email,phone,company,message) VALUES($1,$2,$3,$4,$5)",
+      "INSERT INTO leads(name,email,phone,company,message) VALUES($1,$2,$3,$4,$5) RETURNING id",
       [data.name, data.email, data.phone, data.company, data.message]
     );
 
@@ -23,6 +23,7 @@ exports.handler = async (event) => {
       statusCode: 200,
       body: JSON.stringify({ message: "Thank you! We’ll contact you soon." })
     };
+
   } catch (err) {
     console.error("DB ERROR:", err);
     return {
