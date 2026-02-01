@@ -1,4 +1,4 @@
-document.getElementById("leadForm").addEventListener("submit", async function(e) {
+document.getElementById("leadForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const formData = new FormData(this);
@@ -7,17 +7,21 @@ document.getElementById("leadForm").addEventListener("submit", async function(e)
   try {
     const res = await fetch("/.netlify/functions/saveLead", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
     const data = await res.json();
-    alert(data.message);
-    this.reset();
+
+    if (res.ok) {
+      alert(data.message || "Thank you! We’ll contact you soon.");
+      this.reset();
+    } else {
+      alert(data.message || "Server error. Please try again.");
+    }
+
   } catch (err) {
-    alert("Something went wrong");
+    alert("Network error. Please try again.");
     console.error(err);
   }
 });
